@@ -1,16 +1,18 @@
+// src/app/api/inventery/updateInventery/[id]/route.ts
 import { connectToDatabase } from "../../../../../utilities/mongodb";
 import { ObjectId } from "mongodb";
+import { NextRequest, NextResponse } from "next/server"; // Import NextRequest and NextResponse
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function PUT(req: NextRequest) {
+  // Extract the 'id' from the URL path
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop(); // Extract the dynamic 'id' part from the URL
 
-  if (!ObjectId.isValid(id)) {
-    return new Response(JSON.stringify({ message: "Invalid ID format" }), {
-      status: 400,
-    });
+  if (!id || !ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid or missing ID format" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -25,8 +27,8 @@ export async function PUT(
       .collection("inventory")
       .findOne({ _id: objectId });
     if (!existingItem) {
-      return new Response(
-        JSON.stringify({ message: "Inventory item not found" }),
+      return NextResponse.json(
+        { message: "Inventory item not found" },
         { status: 404 }
       );
     }
@@ -49,8 +51,8 @@ export async function PUT(
     );
 
     if (result.matchedCount === 0) {
-      return new Response(
-        JSON.stringify({ message: "Inventory item not found" }),
+      return NextResponse.json(
+        { message: "Inventory item not found" },
         { status: 404 }
       );
     }
@@ -68,16 +70,18 @@ export async function PUT(
       { upsert: true }
     );
 
-    return new Response(
-      JSON.stringify({
-        message: "Inventory item updated and stats adjusted successfully",
-      }),
+    return NextResponse.json(
+      { message: "Inventory item updated and stats adjusted successfully" },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error in PUT handler:", error);
-    return new Response(JSON.stringify({ message: "Internal server error" }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      {
+        message: "Internal server error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
