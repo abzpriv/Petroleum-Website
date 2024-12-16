@@ -1,9 +1,19 @@
+// src/app/api/inventery/deleteInventery/[id]/route.ts
 import { connectToDatabase } from "../../../../../utilities/mongodb";
 import { ObjectId } from "mongodb";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server"; // Import NextRequest and NextResponse
 
-export async function DELETE({ params }: { params: { id: string } }) {
-  const { id } = params;
+export async function DELETE(req: NextRequest) {
+  // Extract the 'id' from the URL path
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop(); // Extract the dynamic 'id' part from the URL
+
+  if (!id) {
+    return NextResponse.json(
+      { message: "Inventory item id is required" },
+      { status: 400 }
+    );
+  }
 
   try {
     const { db } = await connectToDatabase();
@@ -63,16 +73,18 @@ export async function DELETE({ params }: { params: { id: string } }) {
       console.log("Inventory is empty, reset remaining values to 0.");
     }
 
-    return NextResponse.json({
-      message: "Inventory item deleted and stats updated successfully",
-    });
+    return NextResponse.json(
+      { message: "Inventory item deleted and stats updated successfully" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json(
-      { message: "Internal server error" },
       {
-        status: 500,
-      }
+        message: "Internal server error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
     );
   }
 }
