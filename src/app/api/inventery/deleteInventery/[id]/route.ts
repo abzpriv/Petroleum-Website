@@ -1,10 +1,8 @@
 import { connectToDatabase } from "../../../../../utilities/mongodb";
 import { ObjectId } from "mongodb";
+import { NextResponse } from "next/server";
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE({ params }: { params: { id: string } }) {
   const { id } = params;
 
   try {
@@ -17,8 +15,8 @@ export async function DELETE(
       .findOne({ _id: objectId });
 
     if (!inventoryItem) {
-      return new Response(
-        JSON.stringify({ message: "Inventory item not found" }),
+      return NextResponse.json(
+        { message: "Inventory item not found" },
         { status: 404 }
       );
     }
@@ -29,8 +27,8 @@ export async function DELETE(
       .deleteOne({ _id: objectId });
 
     if (result.deletedCount === 0) {
-      return new Response(
-        JSON.stringify({ message: "Inventory item not found" }),
+      return NextResponse.json(
+        { message: "Inventory item not found" },
         { status: 404 }
       );
     }
@@ -65,16 +63,16 @@ export async function DELETE(
       console.log("Inventory is empty, reset remaining values to 0.");
     }
 
-    return new Response(
-      JSON.stringify({
-        message: "Inventory item deleted and stats updated successfully",
-      }),
-      { status: 200 }
-    );
+    return NextResponse.json({
+      message: "Inventory item deleted and stats updated successfully",
+    });
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ message: "Internal server error" }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      {
+        status: 500,
+      }
+    );
   }
 }
