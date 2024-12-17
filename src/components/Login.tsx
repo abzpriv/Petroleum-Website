@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import Loader from "./Loader"; // Import your Loader component
@@ -10,12 +10,22 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false); // To track if the component is mounted in the client
   const router = useRouter();
+
+  useEffect(() => {
+    // This will only run in the browser (client-side)
+    setIsClient(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const loaderTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 10000);
 
     try {
       const response = await fetch("/api/login", {
@@ -32,13 +42,17 @@ const Login: React.FC = () => {
         return;
       }
 
-      // Simulate login success
-      router.push("/dashboard"); // Redirect after login
+      // Only set the cookie and redirect if it's on the client-side
+      if (isClient) {
+        document.cookie = `isLoggedIn=true; path=/;`;
+        router.push("/dashboard"); // Use router push here to redirect after login
+      }
     } catch (err) {
       console.error("Error logging in:", err);
       setError("An unexpected error occurred. Please try again.");
-    } finally {
       setLoading(false);
+    } finally {
+      clearTimeout(loaderTimeout);
     }
   };
 

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@netlify/plugin-nextjs": "^5.9.0",
     "@types/jspdf": "^2.0.0",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
