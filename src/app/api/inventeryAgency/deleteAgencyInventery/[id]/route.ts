@@ -1,11 +1,19 @@
 import { connectToDatabase } from "../../../../../utilities/mongodb";
 import { ObjectId } from "mongodb";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = await params; // Ensure `params` is awaited if it's asynchronous
+export async function DELETE(req: NextRequest) {
+  // Extract the 'id' from the URL
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop(); // Extract 'id' from the path
+
+  // Validate the ID
+  if (!id || !ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid or missing ID format" },
+      { status: 400 }
+    );
+  }
 
   try {
     const { db } = await connectToDatabase();
@@ -17,8 +25,8 @@ export async function DELETE(
       .findOne({ _id: objectId });
 
     if (!inventoryItem) {
-      return new Response(
-        JSON.stringify({ message: "Inventory item not found" }),
+      return NextResponse.json(
+        { message: "Inventory item not found" },
         { status: 404 }
       );
     }
@@ -29,8 +37,8 @@ export async function DELETE(
       .deleteOne({ _id: objectId });
 
     if (result.deletedCount === 0) {
-      return new Response(
-        JSON.stringify({ message: "Inventory item not found" }),
+      return NextResponse.json(
+        { message: "Inventory item not found" },
         { status: 404 }
       );
     }
@@ -43,7 +51,7 @@ export async function DELETE(
       $inc: {},
     };
 
-    // Only decrement the relevant fields based on the fuelType and ensure decrementing
+    // Decrement relevant fields based on the fuelType
     if (fuelType === "Petrol" && totalAdded !== 0) {
       updateFields.$inc = {
         totalPetrolAdded: -totalAdded,
@@ -71,18 +79,16 @@ export async function DELETE(
       };
     }
 
-    // Ensure we update only when a relevant fuel type exists
+    // Update stats if applicable
     if (Object.keys(updateFields.$inc).length > 0) {
-      const statsUpdateResult = await db
-        .collection("statsAgency")
-        .updateOne({}, updateFields);
-      console.log("Stats update result:", statsUpdateResult);
+      await db.collection("statsAgency").updateOne({}, updateFields);
     }
 
     // Recalculate stats if inventory is now empty
     const inventoryCount = await db
       .collection("agencyInventory")
       .countDocuments();
+
     if (inventoryCount === 0) {
       await db.collection("statsAgency").updateOne(
         {},
@@ -96,19 +102,19 @@ export async function DELETE(
           },
         }
       );
-      console.log("Inventory is empty, reset remaining values to 0.");
     }
 
-    return new Response(
-      JSON.stringify({
+    return NextResponse.json(
+      {
         message: "Inventory item deleted and stats updated successfully",
-      }),
+      },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ message: "Internal server error" }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
