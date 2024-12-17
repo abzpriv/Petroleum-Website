@@ -1,9 +1,8 @@
-// import Login from "@/components/Login";
-// import MenuBar from "@/components/MenuBar";
-// import React from "react";
+import MenuBar from "@/components/MenuBar";
+import React from "react";
 
-// const LoginPage = () => {
-//   return <Login />;
-// };
+const LoginPage = () => {
+  return <MenuBar />;
+};
 
-// export default LoginPage;
+export default LoginPage;
