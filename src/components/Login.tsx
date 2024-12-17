@@ -1,5 +1,4 @@
-"use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import Loader from "./Loader"; // Import your Loader component
@@ -10,7 +9,13 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false); // To track if the component is mounted in the client
   const router = useRouter();
+
+  useEffect(() => {
+    // This will only run in the browser (client-side)
+    setIsClient(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +45,11 @@ const Login: React.FC = () => {
         ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         : undefined;
 
-      document.cookie = `isLoggedIn=true; path=/; expires=${
-        expires ? expires.toUTCString() : ""
-      }`;
+      if (isClient) {
+        document.cookie = `isLoggedIn=true; path=/; expires=${
+          expires ? expires.toUTCString() : ""
+        }`;
+      }
 
       router.push("/dashboard");
     } catch (err) {
