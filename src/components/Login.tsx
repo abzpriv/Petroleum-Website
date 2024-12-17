@@ -42,8 +42,8 @@ const Login: React.FC = () => {
         return;
       }
 
-      // No "Remember Me" logic, just set the login cookie
-      if (isClient) {
+      // Only attempt to set the cookie if running on the client side
+      if (isClient && typeof document !== "undefined") {
         document.cookie = `isLoggedIn=true; path=/;`;
       }
 
