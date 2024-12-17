@@ -8,7 +8,6 @@ import Loader from "./Loader"; // Import your Loader component
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isClient, setIsClient] = useState(false); // To track if the component is mounted in the client
@@ -43,14 +42,9 @@ const Login: React.FC = () => {
         return;
       }
 
-      const expires = rememberMe
-        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        : undefined;
-
+      // No "Remember Me" logic, just set the login cookie
       if (isClient) {
-        document.cookie = `isLoggedIn=true; path=/; expires=${
-          expires ? expires.toUTCString() : ""
-        }`;
+        document.cookie = `isLoggedIn=true; path=/;`;
       }
 
       router.push("/dashboard");
@@ -112,21 +106,6 @@ const Login: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="rememberMe"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                  className="h-5 w-5 text-yellow-500 focus:ring-yellow-500"
-                />
-                <label
-                  htmlFor="rememberMe"
-                  className="ml-2 text-sm text-gray-700"
-                >
-                  Remember Me
-                </label>
-              </div>
               <a
                 href="#"
                 className="text-sm text-yellow-500 hover:text-yellow-600"
