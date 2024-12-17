@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import Loader from "./Loader"; // Import your Loader component
@@ -8,15 +7,10 @@ import Loader from "./Loader"; // Import your Loader component
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isClient, setIsClient] = useState(false); // To track if the component is mounted in the client
   const router = useRouter();
-
-  useEffect(() => {
-    // This will only run in the browser (client-side)
-    setIsClient(true);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,11 +36,15 @@ const Login: React.FC = () => {
         return;
       }
 
-      // Only set the cookie and redirect if it's on the client-side
-      if (isClient) {
-        document.cookie = `isLoggedIn=true; path=/;`;
-        router.push("/dashboard"); // Use router push here to redirect after login
-      }
+      const expires = rememberMe
+        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        : undefined;
+
+      document.cookie = `isLoggedIn=true; path=/; expires=${
+        expires ? expires.toUTCString() : ""
+      }`;
+
+      router.push("/dashboard");
     } catch (err) {
       console.error("Error logging in:", err);
       setError("An unexpected error occurred. Please try again.");
@@ -105,6 +103,21 @@ const Login: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                  className="h-5 w-5 text-yellow-500 focus:ring-yellow-500"
+                />
+                <label
+                  htmlFor="rememberMe"
+                  className="ml-2 text-sm text-gray-700"
+                >
+                  Remember Me
+                </label>
+              </div>
               <a
                 href="#"
                 className="text-sm text-yellow-500 hover:text-yellow-600"
