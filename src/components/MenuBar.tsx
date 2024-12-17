@@ -19,7 +19,7 @@ import {
 import DashboardAdmin from "./DashboardAdmin";
 
 import PetrolPumpAllOrders from "./PetrolPumpAllOrders";
-import InventoryDashboard from "./Inventory";
+import InventoryDashboard from "./InventoryDashboard";
 import InventeryInfo from "./InventeryInfo";
 import InvenetryAgency from "./InvenetryAgency";
 import AgencyHistoryInventory from "./AgencyHistoryInventory";
@@ -29,26 +29,27 @@ const MenuBar: React.FC = () => {
   const [activeComponent, setActiveComponent] = useState<string>("home");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const router = useRouter(); // For redirecting
-  // // UseEffect to check logged-in status, only after component is mounted on the client
-  // useEffect(() => {
-  //   if (typeof document !== "undefined") {
-  //     const isLoggedIn = document.cookie.includes("isLoggedIn=true");
-  //     if (!isLoggedIn) {
-  //       router.push("/login"); // Redirect to login if not logged in
-  //     }
-  //   }
-  // }, [router]);
+  // UseEffect to check logged-in status, only after component is mounted on the client
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const isLoggedIn = document.cookie.includes("isLoggedIn=true");
+      if (!isLoggedIn) {
+        router.push("/login"); // Redirect to login if not logged in
+      }
+    }
+  }, [router]);
 
   // Handle Logout
   const handleLogout = () => {
-    // if (typeof document !== "undefined") {
-    //   document.cookie =
-    //     "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    //   toast.success("You are logged out!");
-    //   setTimeout(() => {
-    //     router.push("/");
-    //   }, 2000);
-    // }
+    if (typeof document !== "undefined") {
+      document.cookie =
+        "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      toast.success("You are logged out!");
+
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    }
   };
 
   const renderComponent = () => {

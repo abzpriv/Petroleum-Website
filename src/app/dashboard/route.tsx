@@ -1,9 +1,8 @@
-import Login from "@/components/Login";
 import MenuBar from "@/components/MenuBar";
 import React from "react";
 
 const LoginPage = () => {
-  return <Login />;
+  return <MenuBar />;
 };
 
 export default LoginPage;
