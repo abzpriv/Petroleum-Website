@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import Loader from "./Loader"; // Import your Loader component
@@ -36,13 +36,16 @@ const Login: React.FC = () => {
         return;
       }
 
-      const expires = rememberMe
-        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        : undefined;
+      // Only use document.cookie on the client-side
+      if (typeof window !== "undefined") {
+        const expires = rememberMe
+          ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          : undefined;
 
-      document.cookie = `isLoggedIn=true; path=/; expires=${
-        expires ? expires.toUTCString() : ""
-      }`;
+        document.cookie = `isLoggedIn=true; path=/; expires=${
+          expires ? expires.toUTCString() : ""
+        }`;
+      }
 
       router.push("/dashboard");
     } catch (err) {
