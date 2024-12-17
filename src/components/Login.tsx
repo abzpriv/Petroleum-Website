@@ -1,4 +1,5 @@
-"use client";
+"use client"; // Marks the component as client-side only
+
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
@@ -11,6 +12,17 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Set the cookie on client-side after the component mounts
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Check if user is logged in based on the cookie
+      const isLoggedIn = document.cookie.includes("isLoggedIn=true");
+      if (isLoggedIn) {
+        router.push("/dashboard");
+      }
+    }
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,12 +48,11 @@ const Login: React.FC = () => {
         return;
       }
 
-      // Only use document.cookie on the client-side
+      // Set cookie after successful login on the client-side
       if (typeof window !== "undefined") {
         const expires = rememberMe
           ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
           : undefined;
-
         document.cookie = `isLoggedIn=true; path=/; expires=${
           expires ? expires.toUTCString() : ""
         }`;
