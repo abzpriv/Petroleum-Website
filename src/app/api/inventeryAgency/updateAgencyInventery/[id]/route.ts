@@ -4,12 +4,12 @@ import { ObjectId } from "mongodb";
 
 export async function PUT(
   req: Request,
-  context: { params: Record<string, string> }
+  { params }: { params: Record<string, string | undefined> }
 ) {
-  const { id } = context.params; // Access `id` from `context.params`
+  const id = params.id; // Access `id` from `params`
 
   // Validate ObjectId
-  if (!ObjectId.isValid(id)) {
+  if (!id || !ObjectId.isValid(id)) {
     return NextResponse.json({ message: "Invalid ObjectId" }, { status: 400 });
   }
 
