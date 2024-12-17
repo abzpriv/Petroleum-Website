@@ -42,12 +42,11 @@ const Login: React.FC = () => {
         return;
       }
 
-      // Only attempt to set the cookie if running on the client side
-      if (isClient && typeof document !== "undefined") {
+      // Only set the cookie and redirect if it's on the client-side
+      if (isClient) {
         document.cookie = `isLoggedIn=true; path=/;`;
+        router.push("/dashboard"); // Use router push here to redirect after login
       }
-
-      router.push("/dashboard");
     } catch (err) {
       console.error("Error logging in:", err);
       setError("An unexpected error occurred. Please try again.");
