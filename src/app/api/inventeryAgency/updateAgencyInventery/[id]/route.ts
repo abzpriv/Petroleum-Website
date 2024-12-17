@@ -4,9 +4,9 @@ import { ObjectId } from "mongodb";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
-  const { id } = params;
+  const { id } = context.params; // Access `id` from `context.params`
 
   // Validate ObjectId
   if (!ObjectId.isValid(id)) {
@@ -21,7 +21,7 @@ export async function PUT(
     // Validate input data
     if (isNaN(totalAddedNum)) {
       return NextResponse.json(
-        { message: "Invalid totalAdded value. It must be a number" },
+        { message: "Invalid 'totalAdded' value. It must be a number." },
         { status: 400 }
       );
     }
@@ -30,7 +30,7 @@ export async function PUT(
     const dateObject = new Date(date);
     if (isNaN(dateObject.getTime())) {
       return NextResponse.json(
-        { message: "Invalid date format" },
+        { message: "Invalid date format." },
         { status: 400 }
       );
     }
@@ -38,12 +38,12 @@ export async function PUT(
     // Ensure required fields are provided
     if (!fuelType || !boughtBy) {
       return NextResponse.json(
-        { message: "Missing required fields: fuelType or boughtBy" },
+        { message: "Missing required fields: 'fuelType' or 'boughtBy'." },
         { status: 400 }
       );
     }
 
-    // Connect to MongoDB using the utility
+    // Connect to MongoDB
     const { db } = await connectToDatabase();
     const agencyInventoryCollection = db.collection("agencyInventory");
 
@@ -54,7 +54,7 @@ export async function PUT(
 
     if (!existingInventory) {
       return NextResponse.json(
-        { message: "Inventory not found" },
+        { message: "Inventory item not found." },
         { status: 404 }
       );
     }
@@ -76,20 +76,20 @@ export async function PUT(
 
     if (!updateResult.modifiedCount) {
       return NextResponse.json(
-        { message: "Failed to update existing inventory" },
+        { message: "Failed to update inventory. No changes detected." },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      { message: "Inventory updated successfully" },
+      { message: "Inventory updated successfully." },
       { status: 200 }
     );
   } catch (error: unknown) {
     console.error("Error occurred while updating inventory:", error);
     return NextResponse.json(
       {
-        message: "Failed to update inventory",
+        message: "An error occurred while updating inventory.",
         error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
