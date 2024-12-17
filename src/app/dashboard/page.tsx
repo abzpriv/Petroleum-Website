@@ -1,8 +1,8 @@
-import MenuBar from "@/components/MenuBar";
-import React from "react";
+// import MenuBar from "@/components/MenuBar";
+// import React from "react";
 
-const MenuBarPage = () => {
-  return <MenuBar />;
-};
+// const DashBoardPage = () => {
+//   return <MenuBar />;
+// };
 
-export default MenuBarPage;
+// export default DashBoardPage;
