@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Loader from "./Loader";
 
-const PetrolInventory: React.FC = () => {
+const InventoryDashboard: React.FC = () => {
   const today = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -181,4 +181,4 @@ const PetrolInventory: React.FC = () => {
   );
 };
 
-export default PetrolInventory;
+export default InventoryDashboard;

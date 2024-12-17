@@ -1,8 +1,8 @@
 import MenuBar from "@/components/MenuBar";
 import React from "react";
 
-const LoginPage = () => {
+const DashboardPage = () => {
   return <MenuBar />;
 };
 
-export default LoginPage;
+export default DashboardPage;
