@@ -1,7 +1,5 @@
-import dynamic from "next/dynamic";
-
-// Dynamically import the MenuBar component with SSR disabled
-const MenuBar = dynamic(() => import("@/components/MenuBar"), { ssr: false });
+import MenuBar from "@/components/MenuBar";
+import React from "react";
 
 const MenuBarPage = () => {
   return <MenuBar />;
