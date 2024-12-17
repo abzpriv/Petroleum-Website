@@ -2,11 +2,8 @@ import { connectToDatabase } from "../../../../../utilities/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
-export async function PUT(
-  req: Request,
-  { params }: { params: Record<string, string | undefined> }
-) {
-  const id = params.id; // Access `id` from `params`
+export async function PUT(req: Request, context: { params: { id: string } }) {
+  const { id } = context.params; // Access `id` from `context.params`
 
   // Validate ObjectId
   if (!id || !ObjectId.isValid(id)) {
