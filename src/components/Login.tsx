@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import Loader from "./Loader"; // Import your Loader component
@@ -9,13 +10,7 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isClient, setIsClient] = useState(false); // Track if we are on the client
   const router = useRouter();
-
-  // Ensure we are on the client side before accessing document
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,15 +36,13 @@ const Login: React.FC = () => {
         return;
       }
 
-      if (isClient) {
-        const expires = rememberMe
-          ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-          : undefined;
+      const expires = rememberMe
+        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        : undefined;
 
-        document.cookie = `isLoggedIn=true; path=/; expires=${
-          expires ? expires.toUTCString() : ""
-        }`;
-      }
+      document.cookie = `isLoggedIn=true; path=/; expires=${
+        expires ? expires.toUTCString() : ""
+      }`;
 
       router.push("/dashboard");
     } catch (err) {
